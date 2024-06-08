@@ -1,0 +1,390 @@
+##### Activity #####
+class HowToUseActivity : BaseActivity() {
+    private lateinit var binding: ActivityHowToUseBinding
+    private lateinit var mViewPagerAdapter: ViewPagerAdapter
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setBeforeClick()
+        setOnClick()
+    }
+
+    private fun setOnClick() {
+        binding.ivNextButton.setOnClickListener {
+            if (binding.viewPager.currentItem == 2) {
+                startLiveCricketActivity()
+            } else {
+                val setted: Int = binding.viewPager.currentItem
+                binding.viewPager.currentItem = setted + 1
+            }
+        }
+
+
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+
+                if (position == 0) {
+                    binding.ivDot.setImageResource(R.drawable.dot_first)
+                    binding.ivNextButton.setImageResource(R.drawable.icon_next)
+                    binding.ivNextButton.setImageResource(R.drawable.icon_next)
+                } else if (position == 1) {
+                    binding.ivDot.setImageResource(R.drawable.dot_second)
+                    binding.ivNextButton.setImageResource(R.drawable.icon_next)
+                } else if (position == 2) {
+                    binding.ivDot.setImageResource(R.drawable.dot_third)
+                    binding.ivNextButton.setImageResource(R.drawable.icon_done)
+
+                }
+            }
+
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+            }
+        })
+    }
+
+
+    private fun startLiveCricketActivity() {
+        LiveMatchUtils.startGivenActivity(
+            this@HowToUseActivity,
+            StartLiveCricketActivity::class.java
+        )
+        finish()
+    }
+
+    private fun setBeforeClick() {
+        binding = ActivityHowToUseBinding.inflate(layoutInflater)
+        setContentView(binding.getRoot())
+
+        val fragments = listOf(
+            HowToOneFragment(),
+            HowToTwoFragment(),
+            HowToThreeFragment()
+        )
+        mViewPagerAdapter = ViewPagerAdapter(this, fragments)
+        binding.viewPager.setAdapter(mViewPagerAdapter)
+        binding.viewPager.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT
+    }
+}
+
+
+----------------------------------------------------------------------------------------------
+##### Activity xml (CenterNextImage) #####
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activity.HowToUseActivity">
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/clToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/layoutAd"
+        layout="@layout/layout_ad"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_45sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
+        app:layout_constraintBottom_toTopOf="@+id/layoutAd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivDot"
+            android:layout_width="@dimen/_45sdp"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/dot_first" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_toolbar_ttl"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_3sdp"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivNextButton"
+            app:layout_constraintStart_toEndOf="@+id/ivDot"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivNextButton"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:padding="@dimen/_5sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/icon_next" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+------------------------------------------------------------------------------------
+##### Viewpager Adapter #####
+class ViewPagerAdapter(fm: FragmentActivity, val list: List<Fragment>) : FragmentStateAdapter(
+    fm
+) {
+    override fun getItemCount(): Int {
+        return list.size
+    }
+
+    override fun createFragment(position: Int): Fragment {
+        return list[position]
+    }
+}
+
+
+---------------------------------------------------------------------------------------
+##### FragmentOne #####
+class HowToOneFragment : Fragment() {
+    private lateinit var binding: FragmentHowToOneBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentHowToOneBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+}
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivImg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@+id/llBottomOne"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_how_one" />
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llBottomOne"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv1"
+            style="@style/tvTitleStyleBold18"
+            android:paddingBottom="@dimen/_3sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:text="@string/one_main"
+            android:textAlignment="center"
+            android:textColor="@color/black" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv2"
+            style="@style/tvTitleStyleSemiBold14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:singleLine="false"
+            android:text="@string/one_sub"
+            android:textAlignment="center"
+            android:textColor="@color/sub_text_clr" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+---------------------------------------------------------------------------------------
+##### FragmentTwo #####
+class HowToTwoFragment : Fragment() {
+    private lateinit var binding: FragmentHowToTwoBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentHowToTwoBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+}
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivImg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@+id/llBottomOne"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_how_two" />
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llBottomOne"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv1"
+            style="@style/tvTitleStyleBold18"
+            android:paddingBottom="@dimen/_3sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:text="@string/two_main"
+            android:textAlignment="center"
+            android:textColor="@color/black" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv2"
+            style="@style/tvTitleStyleSemiBold14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:singleLine="false"
+            android:text="@string/two_sub"
+            android:textAlignment="center"
+            android:textColor="@color/sub_text_clr" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+---------------------------------------------------------------------------------------
+##### FragmentThree #####
+class HowToThreeFragment : Fragment() {
+    private lateinit var binding: FragmentHowToThreeBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentHowToThreeBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
+}
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivImg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@+id/llBottomOne"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_how_three" />
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llBottomOne"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv1"
+            style="@style/tvTitleStyleBold18"
+            android:paddingBottom="@dimen/_3sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:text="@string/three_main"
+            android:textAlignment="center"
+            android:textColor="@color/black" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv2"
+            style="@style/tvTitleStyleSemiBold14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:singleLine="false"
+            android:text="@string/three_sub"
+            android:textAlignment="center"
+            android:textColor="@color/sub_text_clr" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
